@@ -1,6 +1,6 @@
 # Use PHP with Apache as the base image
 FROM php:8.2-apache AS web
-LABEL org.opencontainers.image.source="https://github.com/achraf99sik/laravel_deploy"
+# LABEL org.opencontainers.image.source="https://github.com/achraf99sik/laravel_deploy"
 
 # Install Additional System Dependencies
 RUN apt-get update && apt-get install -y \

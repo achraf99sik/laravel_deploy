@@ -1,5 +1,5 @@
 services:
-    web:
+    app:
         image: app-name:latest
         build:
             target: web
@@ -11,9 +11,9 @@ services:
         volumes:
             - .:/var/www/html
         depends_on:
-            - db
+            - DB
 
-    db:
+    DB:
         platform: "linux/amd64"
         image: postgres:17
         env_file:
