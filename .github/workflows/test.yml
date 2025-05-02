@@ -22,9 +22,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: horizon_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: deploy
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
         options: >-
           --health-cmd="pg_isready -U postgres"
           --health-timeout=30s
@@ -48,27 +48,13 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
+      - name: Setup Problem Matches
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-      - name: Get NPM cache directory
-        id: npm-cache-dir
-        shell: bash
-        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-
-      - name: Cache dependencies
-        id: npm-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install
-
-      - name: Build dependencies
-        run: npm run build
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --ansi
 
       - name: Prepare Laravel
         run: |
@@ -80,9 +66,9 @@ jobs:
           echo "DB_CONNECTION=pgsql" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=horizon_test" >> .env
-          echo "DB_USERNAME=postgres" >> .env
-          echo "DB_PASSWORD=postgres" >> .env
+          echo "DB_DATABASE=deploy" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=root" >> .env
 
       - name: Run database migrations
         run: php artisan migrate --env=testing
